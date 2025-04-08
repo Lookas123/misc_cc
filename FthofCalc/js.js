@@ -208,7 +208,7 @@ function createTable(startCond, endCond, preRange, postRange){
         if(endCond.backfire)tableStr+="<td>"+wcEffs[i]+"</td>";
         else tableStr+="<td>"+gcEffs[i]+"</td>";
         for(let a = 0; a<ssize;a++){
-            if((a==6 && !startCond.bs) || (a==2 && startCond.df)) continue;
+            if(!startCond.backfire && ((a==6 && !startCond.bs) || (a==2 && startCond.df))) continue;
             tableStr+="<td>"+resultTable[a][i].toFixed(7)+"</td>";
         }
         tableStr+="</tr>";
