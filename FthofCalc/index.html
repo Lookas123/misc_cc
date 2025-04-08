@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!-- Made by 671 -->
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="styles.css" rel="stylesheet">
+    <title>Calculator</title>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h3 style="text-align: center">preCond</h3>
+            <label class="">
+                <input id="startBackfire" type="checkbox" class="form-checkbox">
+                <span>Backfire</span>
+            </label>
+            <label class="">
+                <input id="startChange" type="checkbox" class="form-checkbox">
+                <span>Change</span>
+            </label>
+            <label class="">
+                <input id="startDF" type="checkbox" class="form-checkbox">
+                <span>DF</span>
+            </label>
+            <label class="">
+                <input id="startBS" type="checkbox" class="form-checkbox" checked>
+                <span>BS</span>
+            </label>
+        </div>
+        <div class="header">
+            <h3 style="text-align: center">endCond</h3>
+            <label>
+                <input id="endBackfire" type="checkbox" class="form-checkbox">
+                <span>Backfire</span>
+            </label>
+            <label>
+                <input id="endChange" type="checkbox" class="form-checkbox">
+                <span>Change</span>
+            </label>
+            <label>
+                <input id="endDF" type="checkbox" class="form-checkbox">
+                <span>DF</span>
+            </label>
+            <label>
+                <input id="endBS" type="checkbox" class="form-checkbox" checked>
+                <span>BS</span>
+            </label>
+        </div>
+        <div class="header">
+            <h3 style="text-align: center">preRange</h3>
+            <label>
+                <span>Min</span>
+                <input type="number" min="0" value="0" id="preRangeMin">
+                
+            </label>
+            <label>
+                <span>Max</span>
+                <input type="number" min="0" value="1" id="preRangeMax">
+                
+            </label>
+        </div>
+        <div class="header">
+            <h3 style="text-align: center">postRange</h3>
+            <label>
+                <span>Min</span>
+                <input type="number" min="0" value="0" id="postRangeMin">
+                
+            </label>
+            <label>
+                <span>Max</span>
+                <input type="number" min="0" value="1" id="postRangeMax">
+                
+            </label>
+            
+
+        </div>
+    </div>
+
+        
+        
+    
+    <!-- Button to create the table -->
+    <div style="text-align: center; margin-top: 20px;">
+        <button onclick="generateTable()">
+            Create Table
+        </button>
+    </div>
+
+    <!-- Output section for the table -->
+    <div id="output" style="text-align: center;"></div>
+
+    <!-- Include the js.js file -->
+    <script src="js.js"></script>
+
+</body></html>
