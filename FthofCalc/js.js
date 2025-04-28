@@ -3,54 +3,68 @@
 //Backfire pool
 //Clot Ruin, Cuf Ef, Sweet, Blab 
 
-
+//Generate a list of possible pools with the given conditions
 function poolArray(backfire, df){
     const size = backfire?4:6;
     const overrideSpot = backfire?3:4;
+    //Array of possible pools
     const pools = [];
+    //Loop through every possible pool of given size
     for(let i=0; i<(2**size);i++){
         let pool=[];
         let n=i;
+        //Convert number to pool
         for (let a = 0; a < size;a++){
             n-=(pool[a]=n%2);
             n/=2;
         }
-        //if this isn't a possible pool due to pool overriding, don't add it
+        //Check for contradictions
         if(pool[overrideSpot] === 1 && pool.indexOf(1)<overrideSpot) continue;
         if(pool[0] === 0 && pool[overrideSpot] === 0) continue;
-        if(!backfire && pool[1] === df && pool[overrideSpot] === 0) continue;
+        if(!backfire && pool[1] === Number(df) && pool[overrideSpot] === 0) continue;
         pools.push(pool);
     }
     return pools;
 }
 
+//Convert a condensed pool (each element is one batch of effects) to an expanded pool (each element is one effect)
 function expandPool(backfire, pool){
     let expanded = [];
     if(backfire){
+        //guaranteed: clot/ruin
         expanded.push(pool[0]);
         expanded.push(pool[0]);
 
+        //call 1: cuf/ef
         expanded.push(pool[1]);
         expanded.push(pool[1]);
 
+        //call 2: sweet
         expanded.push(pool[2]);
 
+        //call 3: blab
         expanded.push(pool[3]);
     }
     else{
+        //guaranteed: frenzy/lucky
         expanded.push(pool[0]);
         expanded.push(pool[0]);
 
+        //conditional: cf
         expanded.push(pool[1]);
 
+        //call 1: storm storm blab
         expanded.push(pool[2]);
         expanded.push(pool[2]);
         expanded.push(pool[2]);
 
+        //call 2: bs
         expanded.push(pool[3]);
 
+        //call 3: storm drop
         expanded.push(pool[4]);
 
+        //call 4: sweet
         expanded.push(pool[5]);
     }
     return expanded;
@@ -60,22 +74,24 @@ function createRange(min, max){
     return {min:min, max:max};
 }
 
-function randChanceWithKnown(rand, range){
-    range ??= createRange(0,1);
-    const max = Math.min(rand.max, range.max);
-    const min = Math.max(rand.min, range.min);
-    if(max<min) return 0
-    if(range.max === range.min) return (max==min)?1:0;
-    return (max-min)/(range.max-range.min);
+//what is the chance for a random value in a known range to be in another range
+function randChanceWithKnown(rand, known){
+    known ??= createRange(0,1);
+    const max = Math.min(rand.max, known.max);
+    const min = Math.max(rand.min, known.min);
+    if(max<min) return 0;
+    //if the known is a single point, is it within the range?
+    if(known.max === known.min) return (max==min)?1:0;
+    return (max-min)/(known.max-known.min);
 }
 
+//Calculate chance for a pool based on a known set of ranges (or without one)
 function poolChanceWithKnowns(backfire, pool, knowns){
     let chance = 1;
-    const overrideSpot = backfire?3:4;
     knowns??=new Array(4).fill(createRange(0,1));
     if(backfire){
         //override blab
-        if(pool[overrideSpot] === 1) return randChanceWithKnown(createRange(0,0.1), knowns[2]);
+        if(pool[3] === 1) return randChanceWithKnown(createRange(0,0.1), knowns[2]);
         else chance *= randChanceWithKnown(createRange(0.1,1), knowns[2]);
         //cuf/ef
         if(pool[1] === 1) chance *= randChanceWithKnown(createRange(0,0.1), knowns[0]);
@@ -88,7 +104,7 @@ function poolChanceWithKnowns(backfire, pool, knowns){
         if(pool[5] === 1) chance *= randChanceWithKnown(createRange(0,0.0001), knowns[3]);
         else chance *= randChanceWithKnown(createRange(0.0001,1), knowns[3]);
         //override csd
-        if(pool[overrideSpot] === 1) return chance*randChanceWithKnown(createRange(0,0.15), knowns[2]);
+        if(pool[4] === 1) return chance*randChanceWithKnown(createRange(0,0.15), knowns[2]);
         else chance *= randChanceWithKnown(createRange(0.15,1), knowns[2]);
         //storm storm blab
         if(pool[2] === 1) chance *= randChanceWithKnown(createRange(0,0.1), knowns[0]);
@@ -100,12 +116,12 @@ function poolChanceWithKnowns(backfire, pool, knowns){
     return chance
 };
 
+//Convert a pool into a set of known ranges
 function poolToKnowns(backfire, pool){
-    const overrideSpot = backfire?3:4;
     let knowns=[];
     if(backfire){
         //override blab
-        if(pool[overrideSpot] === 1) return [createRange(0,1),createRange(0,1),createRange(0,0.1)];
+        if(pool[3] === 1) return [createRange(0,1),createRange(0,1),createRange(0,0.1)];
         else knowns[2] = createRange(0.1,1);
         //cuf/ef
         if(pool[1] === 1) knowns[0]=createRange(0,0.1);
@@ -118,7 +134,7 @@ function poolToKnowns(backfire, pool){
         if(pool[5] === 1) knowns[3] = createRange(0,0.0001);
         else knowns[3] = createRange(0.0001,1);
         //override csd
-        if(pool[overrideSpot] === 1) return [createRange(0,1),createRange(0,1),createRange(0,0.15),knowns[3]];
+        if(pool[4] === 1) return [createRange(0,1),createRange(0,1),createRange(0,0.15),knowns[3]];
         else knowns[2] = createRange(0.15,1);
         //storm storm blab
         if(pool[2] === 1) knowns[0]=createRange(0,0.1);
@@ -219,27 +235,40 @@ function createTable(startCond, endCond, preRange, postRange){
 }
 
 //made by 671
+//Calls createTable based on input elements
+const startBackfire = document.getElementById('startBackfire');
+const startChange = document.getElementById('startChange');
+const startDF = document.getElementById('startDF');
+const startBS = document.getElementById('startBS');
+const endBackfire = document.getElementById('endBackfire');
+const endChange = document.getElementById('endChange');
+const endDF = document.getElementById('endDF');
+const endBS = document.getElementById('endBS');
+const preRangeMin = document.getElementById('preRangeMin');
+const preRangeMax = document.getElementById('preRangeMax');
+const postRangeMin = document.getElementById('postRangeMin');
+const postRangeMax = document.getElementById('postRangeMax');
 function generateTable() {
     const startCond = {
-        backfire: document.getElementById('startBackfire').checked,
-        change: document.getElementById('startChange').checked,
-        df: document.getElementById('startDF').checked,
-        bs: document.getElementById('startBS').checked
+        backfire: startBackfire.checked,
+        change: startChange.checked,
+        df: startDF.checked,
+        bs: startBS.checked
     };
 
     const endCond = {
-        backfire: document.getElementById('endBackfire').checked,
-        change: document.getElementById('endChange').checked,
-        df: document.getElementById('endDF').checked,
-        bs: document.getElementById('endBS').checked
+        backfire: endBackfire.checked,
+        change: endChange.checked,
+        df: endDF.checked,
+        bs: endBS.checked
     };
     
-    const preRangeMin = document.getElementById('preRangeMin').valueAsNumber;
-    const preRangeMax = document.getElementById('preRangeMax').valueAsNumber;
-    const postRangeMin = document.getElementById('postRangeMin').valueAsNumber;
-    const postRangeMax = document.getElementById('postRangeMax').valueAsNumber;
+    const preRangeMinV = preRangeMin.valueAsNumber;
+    const preRangeMaxV = preRangeMax.valueAsNumber;
+    const postRangeMinV = postRangeMin.valueAsNumber;
+    const postRangeMaxV = postRangeMax.valueAsNumber;
 
-    const preRange = createRange(preRangeMin, preRangeMax);
-    const postRange = createRange(postRangeMin, postRangeMax);
+    const preRange = createRange(preRangeMinV, preRangeMaxV);
+    const postRange = createRange(postRangeMinV, postRangeMaxV);
     createTable(startCond, endCond, preRange, postRange);
 }
