@@ -16,9 +16,9 @@ function poolArray(backfire, df){
             n/=2;
         }
         //if this isn't a possible pool due to pool overriding, don't add it
-        if(pool[overrideSpot] == 1 && pool.indexOf(1)<overrideSpot) continue;
-        if(pool[0] == 0 && pool[overrideSpot] == 0) continue;
-        if(!backfire && pool[1] == df && pool[overrideSpot] == 0) continue;
+        if(pool[overrideSpot] === 1 && pool.indexOf(1)<overrideSpot) continue;
+        if(pool[0] === 0 && pool[overrideSpot] === 0) continue;
+        if(!backfire && pool[1] === df && pool[overrideSpot] === 0) continue;
         pools.push(pool);
     }
     return pools;
@@ -65,7 +65,7 @@ function randChanceWithKnown(rand, range){
     const max = Math.min(rand.max, range.max);
     const min = Math.max(rand.min, range.min);
     if(max<min) return 0
-    if(range.max == range.min) return (max==min)?1:0;
+    if(range.max === range.min) return (max==min)?1:0;
     return (max-min)/(range.max-range.min);
 }
 
@@ -75,26 +75,26 @@ function poolChanceWithKnowns(backfire, pool, knowns){
     knowns??=new Array(4).fill(createRange(0,1));
     if(backfire){
         //override blab
-        if(pool[overrideSpot] == 1) return randChanceWithKnown(createRange(0,0.1), knowns[2]);
+        if(pool[overrideSpot] === 1) return randChanceWithKnown(createRange(0,0.1), knowns[2]);
         else chance *= randChanceWithKnown(createRange(0.1,1), knowns[2]);
         //cuf/ef
-        if(pool[1] == 1) chance *= randChanceWithKnown(createRange(0,0.1), knowns[0]);
+        if(pool[1] === 1) chance *= randChanceWithKnown(createRange(0,0.1), knowns[0]);
         else chance *= randChanceWithKnown(createRange(0.1,1), knowns[0]);
         //sweet
-        if(pool[2] == 1) chance *= randChanceWithKnown(createRange(0,0.003), knowns[1]);
+        if(pool[2] === 1) chance *= randChanceWithKnown(createRange(0,0.003), knowns[1]);
         else chance *= randChanceWithKnown(createRange(0.003,1), knowns[1]);
     }else{
         //sweet
-        if(pool[5] == 1) chance *= randChanceWithKnown(createRange(0,0.0001), knowns[3]);
+        if(pool[5] === 1) chance *= randChanceWithKnown(createRange(0,0.0001), knowns[3]);
         else chance *= randChanceWithKnown(createRange(0.0001,1), knowns[3]);
         //override csd
-        if(pool[overrideSpot] == 1) return chance*randChanceWithKnown(createRange(0,0.15), knowns[2]);
+        if(pool[overrideSpot] === 1) return chance*randChanceWithKnown(createRange(0,0.15), knowns[2]);
         else chance *= randChanceWithKnown(createRange(0.15,1), knowns[2]);
         //storm storm blab
-        if(pool[2] == 1) chance *= randChanceWithKnown(createRange(0,0.1), knowns[0]);
+        if(pool[2] === 1) chance *= randChanceWithKnown(createRange(0,0.1), knowns[0]);
         else chance *= randChanceWithKnown(createRange(0.1,1), knowns[0]);
         //bs
-        if(pool[3] == 1) chance *= randChanceWithKnown(createRange(0,0.25), knowns[1]);
+        if(pool[3] === 1) chance *= randChanceWithKnown(createRange(0,0.25), knowns[1]);
         else chance *= randChanceWithKnown(createRange(0.25,1), knowns[1]);
     }
     return chance
@@ -105,26 +105,26 @@ function poolToKnowns(backfire, pool){
     let knowns=[];
     if(backfire){
         //override blab
-        if(pool[overrideSpot] == 1) return [createRange(0,1),createRange(0,1),createRange(0,0.1)];
+        if(pool[overrideSpot] === 1) return [createRange(0,1),createRange(0,1),createRange(0,0.1)];
         else knowns[2] = createRange(0.1,1);
         //cuf/ef
-        if(pool[1] == 1) knowns[0]=createRange(0,0.1);
+        if(pool[1] === 1) knowns[0]=createRange(0,0.1);
         else knowns[0] = createRange(0.1,1);
         //sweet
-        if(pool[2] == 1) knowns[1]=createRange(0,0.003);
+        if(pool[2] === 1) knowns[1]=createRange(0,0.003);
         else knowns[1] = createRange(0.003,1);
     }else{
         //sweet
-        if(pool[5] == 1) knowns[3] = createRange(0,0.0001);
+        if(pool[5] === 1) knowns[3] = createRange(0,0.0001);
         else knowns[3] = createRange(0.0001,1);
         //override csd
-        if(pool[overrideSpot] == 1) return [createRange(0,1),createRange(0,1),createRange(0,0.15),knowns[3]];
+        if(pool[overrideSpot] === 1) return [createRange(0,1),createRange(0,1),createRange(0,0.15),knowns[3]];
         else knowns[2] = createRange(0.15,1);
         //storm storm blab
-        if(pool[2] == 1) knowns[0]=createRange(0,0.1);
+        if(pool[2] === 1) knowns[0]=createRange(0,0.1);
         else knowns[0] = createRange(0.1,1);
         //bs
-        if(pool[3] == 1) knowns[1]=createRange(0,0.25);
+        if(pool[3] === 1) knowns[1]=createRange(0,0.25);
         else knowns[1] = createRange(0.25,1);
     }
     return knowns;
@@ -156,7 +156,7 @@ function createTable(startCond, endCond, preRange, postRange){
         let poolCount = expanded.reduce((a,c)=>{return a+c});
         let echance = pchance/poolCount;
         for(let eff in expanded){
-            if(expanded[eff] == 0) continue;
+            if(expanded[eff] === 0) continue;
             knowns[startCond.pickIndex] = createRange(poolNum/poolCount, (poolNum+1)/poolCount);
             poolNum++;
             iniChances[eff]+=echance;
@@ -175,9 +175,9 @@ function createTable(startCond, endCond, preRange, postRange){
                 let pool2Num = 0;
                 let pool2Count = expanded2.reduce((a,c)=>{return a+c});
                 for(let eff2 in expanded2){
-                    if(expanded2[eff2]==0)continue;
+                    if(expanded2[eff2] === 0) continue;
                     let e2chance = randChanceWithKnown(createRange(pool2Num/pool2Count, (pool2Num+1)/pool2Count), trimmedKnowns[endCond.pickIndex])*p2chance*echance;
-                    resultTable[eff][eff2]+=e2chance;
+                    resultTable[eff][eff2] += e2chance;
                     if(e2chance<0){console.error(createRange(pool2Num/pool2Count, (pool2Num+1)/pool2Count), trimmedKnowns[endCond.pickIndex])};
                     pool2Num++;
                 }
@@ -234,10 +234,10 @@ function generateTable() {
         bs: document.getElementById('endBS').checked
     };
     
-    const preRangeMin = document.getElementById('preRangeMin').value;
-    const preRangeMax = document.getElementById('preRangeMax').value;
-    const postRangeMin = document.getElementById('postRangeMin').value;
-    const postRangeMax = document.getElementById('postRangeMax').value;
+    const preRangeMin = document.getElementById('preRangeMin').valueAsNumber;
+    const preRangeMax = document.getElementById('preRangeMax').valueAsNumber;
+    const postRangeMin = document.getElementById('postRangeMin').valueAsNumber;
+    const postRangeMax = document.getElementById('postRangeMax').valueAsNumber;
 
     const preRange = createRange(preRangeMin, preRangeMax);
     const postRange = createRange(postRangeMin, postRangeMax);
