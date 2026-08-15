@@ -47,9 +47,13 @@ function calcHoles(garden){
 
 //Display all holes in a nice string
 function plotsNice(a){
+    let spacing = 4;
+    for (const element of a) {
+      if(element.toString().length >= spacing) spacing = element.toString().length + 1; 
+    }
     let str = "";
     for(let b = 0; b<6; b++){
-        for(let c = 0; c<6; c++) {str+=a[b*6+c]+" ".repeat(4-a[b*6+c].toString().length)}
+        for(let c = 0; c<6; c++) {str+=a[b*6+c]+" ".repeat(spacing-a[b*6+c].toString().length)}
         str+="\n";
     }
     return str;
